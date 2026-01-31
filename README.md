@@ -6,7 +6,7 @@ Macros that add Observation-style reactivity to structs.
 In `Package.swift`:
 
 ```swift
-.package(url: "https://github.com/JohnDemirci/ValueObservation.git", .upToNextMajor(from: "1.0.1")),
+.package(url: "https://github.com/JohnDemirci/ValueObservation.git", .upToNextMajor(from: "1.0.2")),
 ```
 
 ## Basic Usage
