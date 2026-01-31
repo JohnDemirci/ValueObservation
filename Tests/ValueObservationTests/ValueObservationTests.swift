@@ -95,6 +95,67 @@ final class ValueObservationTests: XCTestCase {
         )
     }
 
+    func testObservableValuePrivateTypeUsesFileprivateRequirements() {
+        assertMacroExpansion(
+            """
+            @ObservableValue
+            private struct Model {
+                var count: Int = 0
+            }
+            """,
+            expandedSource: """
+            private struct Model {
+                @Observing
+                var count: Int = 0
+
+                fileprivate private(set) var _$id = UUID()
+
+                @Ignoring private var _$observationRegistrar = Observation.ObservationRegistrar()
+
+                fileprivate func copy() -> Self {
+                  var copy = self
+                  copy._$id = UUID()
+                  copy._$observationRegistrar = Observation.ObservationRegistrar()
+                  return copy
+                }
+
+                internal nonisolated func access<__macro_local_6MemberfMu_>(
+                  keyPath: KeyPath<Model, __macro_local_6MemberfMu_>
+                ) {
+                  _$observationRegistrar.access(self, keyPath: keyPath)
+                }
+
+                internal nonisolated func withMutation<__macro_local_6MemberfMu0_, __macro_local_14MutationResultfMu_>(
+                  keyPath: KeyPath<Model, __macro_local_6MemberfMu0_>,
+                  _ mutation: () throws -> __macro_local_14MutationResultfMu_
+                ) rethrows -> __macro_local_14MutationResultfMu_ {
+                  try _$observationRegistrar.withMutation(of: self, keyPath: keyPath, mutation)
+                }
+
+                private nonisolated func shouldNotifyObservers<__macro_local_6MemberfMu1_>(_ lhs: __macro_local_6MemberfMu1_, _ rhs: __macro_local_6MemberfMu1_) -> Bool {
+                    true
+                }
+
+                private nonisolated func shouldNotifyObservers<__macro_local_6MemberfMu2_: Equatable>(_ lhs: __macro_local_6MemberfMu2_, _ rhs: __macro_local_6MemberfMu2_) -> Bool {
+                    lhs != rhs
+                }
+
+                private nonisolated func shouldNotifyObservers<__macro_local_6MemberfMu3_: AnyObject>(_ lhs: __macro_local_6MemberfMu3_, _ rhs: __macro_local_6MemberfMu3_) -> Bool {
+                    lhs !== rhs
+                }
+
+                private nonisolated func shouldNotifyObservers<__macro_local_6MemberfMu4_: Equatable & AnyObject>(_ lhs: __macro_local_6MemberfMu4_, _ rhs: __macro_local_6MemberfMu4_) -> Bool {
+                    lhs != rhs
+                }
+            }
+
+            extension Model: ValueObservation.ObservableValue {
+            }
+            """,
+            macroSpecs: observableValueMacroSpecs
+        )
+    }
+
     func testObservableValueOnEnumEmitsDiagnostic() {
         assertMacroExpansion(
             """

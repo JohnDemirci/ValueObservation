@@ -30,6 +30,48 @@ withObservationTracking {
 counter.count += 1
 ```
 
+## SwiftUI ##
+```swift
+@Observable
+private final class ViewModel {
+    @ObservableValue
+    struct User {
+        var name: String = ""
+        var lastName: String = ""
+    }
+    
+    @ObservationIgnored
+    var user = User()
+    
+    func setLastName(to newLastName: String) {
+        user.lastName = newLastName
+    }
+}
+
+struct ContentView: View {
+    @State private var viewModel = ViewModel()
+    var body: some View {
+        let _ = Self._printChanges()
+        VStack {
+            Text("name: \(viewModel.user.name)")
+            TextField(
+                "name",
+                text: $viewModel.user.name
+            )
+            
+            Button("Change Last name") {
+                viewModel.setLastName(
+                    to: String(Int.random(in: 0..<1000))
+                )
+            }
+        }
+    }
+}
+```
+### Notes
+- Mark the `ObservableValue` propert with `ObservationIgnored` to handle to observation notifications to be handled by the `ObservableValue` itself, otherwise you will see unnecessary view re-renders every time user changes as opposed to fine grained changes.
+- Because the last name was not directly being observed by the Observation machinery inside SwiftUI's view, the changes to last name does not fire notifications'
+
 ## Property Control
 Use `@Observing` to explicitly make a stored property observable, and `@Ignoring` to opt out.
 

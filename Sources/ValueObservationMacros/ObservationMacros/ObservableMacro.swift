@@ -38,16 +38,23 @@ public struct ObservableValueMacro {
     static let registrarVariableName = "_$observationRegistrar"
     static let idVariableName = "_$id"
 
+    static func requirementAccessLevelKeyword(_ accessLevelKeyword: String?) -> String? {
+        guard let accessLevelKeyword else { return nil }
+        if accessLevelKeyword == "private" {
+            return "fileprivate"
+        }
+        return accessLevelKeyword
+    }
+
     static func identifierVariable(
         _ observableType: TokenSyntax,
         accessLevelKeyword: String?
     ) -> DeclSyntax {
+        let requirementAccessLevel = requirementAccessLevelKeyword(accessLevelKeyword)
         let modifier: String
-        switch accessLevelKeyword {
-        case "private":
-            modifier = "private "
+        switch requirementAccessLevel {
         case "fileprivate", "public", "package":
-            modifier = "\(accessLevelKeyword!) private(set) "
+            modifier = "\(requirementAccessLevel!) private(set) "
         default:
             modifier = "private(set) "
         }
@@ -67,7 +74,8 @@ public struct ObservableValueMacro {
         _ observableType: TokenSyntax,
         accessLevelKeyword: String?
     ) -> DeclSyntax {
-        let modifier = accessLevelKeyword.map { "\($0) " } ?? ""
+        let requirementAccessLevel = requirementAccessLevelKeyword(accessLevelKeyword)
+        let modifier = requirementAccessLevel.map { "\($0) " } ?? ""
         return """
         \(raw: modifier)func copy() -> Self {
           var copy = self
@@ -366,8 +374,7 @@ extension ObservableValueMacro: MemberMacro {
             throw DiagnosticsError(syntax: node, message: "'@ObservableValue' cannot be applied to enumeration type '\(observableType.text)'", id: .invalidApplication)
         }
         if declaration.isClass {
-            // structs are not yet supported; copying/mutation semantics tbd
-            //throw DiagnosticsError(syntax: node, message: "'@Observable' cannot be applied to struct type '\(observableType.text)'", id: .invalidApplication)
+            throw DiagnosticsError(syntax: node, message: "'@ObservableValue' cannot be applied to Class type '\(observableType.text)' please use '@Observable' macro for classes. Note that when you are encapsulating an @ObservableValue inside a @Observable class, make sure to tag it with @ObservationIgnored to prevent it from sending unnecessary notifications by the @Observable class.", id: .invalidApplication)
         }
         if declaration.isActor {
             // actors cannot yet be supported for their isolation
