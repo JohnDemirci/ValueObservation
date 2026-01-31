@@ -203,9 +203,7 @@ final class ValueObservationTests: XCTestCase {
                       return _name
                     }
                     set {
-                      if let oldObs = _name as? ObservableValue,
-                         let newObs = newValue as? ObservableValue,
-                         oldObs._$id == newObs._$id {
+                      if _$idEqual(_name, newValue) {
                         _name = newValue
                         return
                       }
@@ -222,7 +220,7 @@ final class ValueObservationTests: XCTestCase {
                     _modify {
                       access(keyPath: \\.name)
 
-                      if _name is ObservableValue {
+                      if _$isObservable(_name) {
                         yield &_name
                       } else {
                         _$observationRegistrar.willSet(self, keyPath: \\.name)

@@ -24,6 +24,33 @@ public protocol ObservableValue: Observable {
     func copy() -> Self
 }
 
+@inlinable
+public func _$idEqual<T: ObservableValue>(_ lhs: T, _ rhs: T) -> Bool {
+    lhs._$id == rhs._$id
+}
+
+@inlinable
+public func _$idEqual<T>(_ lhs: T, _ rhs: T) -> Bool {
+    guard
+        let lhs = lhs as? ObservableValue,
+        let rhs = rhs as? ObservableValue
+    else {
+        return false
+    }
+
+    return lhs._$id == rhs._$id
+}
+
+@inlinable
+public func _$isObservable<T: ObservableValue>(_ value: T) -> Bool {
+    return true
+}
+
+@inlinable
+public func _$isObservable<T>(_ value: T) -> Bool {
+    value is any ObservableValue
+}
+
 @attached(
     member,
     names: named(_$id),
