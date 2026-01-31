@@ -502,9 +502,7 @@ public struct ObservingMacro: AccessorMacro {
         let setAccessor: AccessorDeclSyntax =
         """
         set {
-          if let oldObs = _\(identifier) as? ObservableValue,
-             let newObs = newValue as? ObservableValue,
-             oldObs._$id == newObs._$id {
+          if _$idEqual(_\(identifier), newValue) {
             _\(identifier) = newValue
             return
           }
@@ -533,7 +531,7 @@ public struct ObservingMacro: AccessorMacro {
         _modify {
           access(keyPath: \\.\(identifier))
 
-          if _\(identifier) is ObservableValue {
+          if _$isObservable(_\(identifier)) {
             yield &_\(identifier)
           } else {
             \(raw: ObservableValueMacro.registrarVariableName).willSet(self, keyPath: \\.\(identifier))
