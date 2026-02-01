@@ -19,7 +19,7 @@ Swift's Observation currently focuses on reference types; struct semantics are s
 In `Package.swift`:
 
 ```swift
-.package(url: "https://github.com/JohnDemirci/ValueObservation.git", .upToNextMajor(from: "1.0.1")),
+.package(url: "https://github.com/JohnDemirci/ValueObservation.git", .upToNextMajor(from: "1.0.2")),
 ```
 
 ## Basic Usage
