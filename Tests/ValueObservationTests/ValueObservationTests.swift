@@ -47,11 +47,11 @@ final class ValueObservationTests: XCTestCase {
                 @Observing var already: String = ""
                 var computed: Int { count }
 
-                public private(set) var _$id = UUID()
+                public nonisolated private(set) var _$id = UUID()
 
                 @Ignoring private var _$observationRegistrar = Observation.ObservationRegistrar()
 
-                public func copy() -> Self {
+                public nonisolated func copy() -> Self {
                   var copy = self
                   copy._$id = UUID()
                   copy._$observationRegistrar = Observation.ObservationRegistrar()
@@ -88,7 +88,7 @@ final class ValueObservationTests: XCTestCase {
                 }
             }
 
-            extension Model: ValueObservation.ObservableValue {
+            nonisolated extension Model: ValueObservation.ObservableValue {
             }
             """,
             macroSpecs: observableValueMacroSpecs
@@ -108,11 +108,11 @@ final class ValueObservationTests: XCTestCase {
                 @Observing
                 var count: Int = 0
 
-                fileprivate private(set) var _$id = UUID()
+                fileprivate nonisolated private(set) var _$id = UUID()
 
                 @Ignoring private var _$observationRegistrar = Observation.ObservationRegistrar()
 
-                fileprivate func copy() -> Self {
+                fileprivate nonisolated func copy() -> Self {
                   var copy = self
                   copy._$id = UUID()
                   copy._$observationRegistrar = Observation.ObservationRegistrar()
@@ -149,7 +149,7 @@ final class ValueObservationTests: XCTestCase {
                 }
             }
 
-            extension Model: ValueObservation.ObservableValue {
+            nonisolated extension Model: ValueObservation.ObservableValue {
             }
             """,
             macroSpecs: observableValueMacroSpecs
@@ -169,7 +169,7 @@ final class ValueObservationTests: XCTestCase {
                 case vanilla
             }
 
-            extension Flavor: ValueObservation.ObservableValue {
+            nonisolated extension Flavor: ValueObservation.ObservableValue {
             }
             """,
             diagnostics: [

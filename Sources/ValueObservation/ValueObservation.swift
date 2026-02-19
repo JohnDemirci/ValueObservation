@@ -8,7 +8,7 @@
 
 public protocol ObservableValue: Observable {
     /// ID used to calculate whether system should send observation notifications
-    var _$id: UUID { get }
+    nonisolated var _$id: UUID { get }
 
     /// Use this function to create a detached copy of the value if you do not want to trigger notifications being sent by the copy.
     ///
@@ -21,7 +21,7 @@ public protocol ObservableValue: Observable {
     /// var copy = foo
     /// copy.bar = baz
     /// ```
-    func copy() -> Self
+    nonisolated func copy() -> Self
 }
 
 @inlinable

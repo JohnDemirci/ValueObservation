@@ -54,9 +54,9 @@ public struct ObservableValueMacro {
         let modifier: String
         switch requirementAccessLevel {
         case "fileprivate", "public", "package":
-            modifier = "\(requirementAccessLevel!) private(set) "
+            modifier = "\(requirementAccessLevel!) nonisolated private(set) "
         default:
-            modifier = "private(set) "
+            modifier = "nonisolated private(set) "
         }
         return """
         \(raw: modifier)var \(raw: idVariableName) = UUID()
@@ -77,7 +77,7 @@ public struct ObservableValueMacro {
         let requirementAccessLevel = requirementAccessLevelKeyword(accessLevelKeyword)
         let modifier = requirementAccessLevel.map { "\($0) " } ?? ""
         return """
-        \(raw: modifier)func copy() -> Self {
+        \(raw: modifier)nonisolated func copy() -> Self {
           var copy = self
           copy.\(raw: idVariableName) = UUID()
           copy.\(raw: registrarVariableName) = \(raw: qualifiedRegistrarTypeName)()
@@ -445,7 +445,7 @@ extension ObservableValueMacro: ExtensionMacro {
         }
 
         let decl: DeclSyntax = """
-        extension \(raw: type.trimmedDescription): \(raw: qualifiedConformanceName) {}
+        nonisolated extension \(raw: type.trimmedDescription): \(raw: qualifiedConformanceName) {}
         """
         let ext = decl.cast(ExtensionDeclSyntax.self)
 
